@@ -1,42 +1,27 @@
 import webpack from 'webpack';
-import path from 'path';
-import globImporter from 'node-sass-glob-importer';
 import config from './webpack.config';
-
-const cssLoader = {
-    loader: 'css-loader',
-    options: {
-        url: true
-    }
-};
-
-const sassLoader = {
-    loader: 'sass-loader',
-    options: {
-        importer: globImporter(),
-        includePaths: [
-            'src/',
-            'node_modules/'
-        ]
-    }
-};
+import paths from './env/paths';
+import { styleLoader, cssLoader, sassLoader } from './env/style-loaders';
 
 config.mode = 'development';
 
 config.entry.app = [
     'webpack-hot-middleware/client?reload=true',
-    path.resolve(__dirname, '../demo/index.js')
+    `${paths.demo}/index.js`
 ];
 
 config.module.rules = config.module.rules.concat([
     {
         test: /\.css$/,
-        loader: cssLoader
+        use: [
+            styleLoader,
+            cssLoader
+        ]
     },
     {
         test: /\.scss$/,
         use: [
-            'style-loader',
+            styleLoader,
             cssLoader,
             sassLoader
         ]

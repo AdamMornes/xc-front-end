@@ -4,6 +4,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import StyleLintPlugin from 'stylelint-webpack-plugin';
 import VueLoaderPlugin from 'vue-loader/lib/plugin';
 import marked from 'marked';
+import paths from './env/paths';
 
 const renderer = new marked.Renderer();
 
@@ -11,17 +12,22 @@ module.exports = {
     devtool: 'inline-cheap-module-source-map',
     entry: {},
     output: {
-        filename: 'assets/scripts/[name].min.js',
+        filename: 'scripts/[name].min.js',
+        chunkFilename: 'scripts/[name].min.js',
         publicPath: '/',
-        path: path.resolve(__dirname, '../dist')
+        path: paths.prod
     },
     resolve: {
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
-            demo: path.resolve('demo/'),
-            '@': path.resolve('src/'),
-            assets: path.resolve('src/assets')
+            '@': paths.src,
+            'demo': paths.demo,
+            'assets': `${paths.src}/assets`,
+            '~': path.resolve('./')
         }
+    },
+    externals: {
+        jquery: 'jQuery'
     },
     performance: {
         hints: false
@@ -58,45 +64,7 @@ module.exports = {
             },
             {
                 test: /\.js$/,
-                exclude: /node_modules/,
                 loader: 'babel-loader'
-            },
-            {
-                test: require.resolve('jquery'),
-                use: [
-                    {
-                        loader: 'expose-loader',
-                        options: '$'
-                    }
-                ]
-            },
-            {
-                test: /\.(png|jp(e*)g|gif|svg)(\?v=\d+\.\d+\.\d+)$/,
-                loader: 'image-webpack-loader',
-                enforce: 'pre'
-            },
-            {
-                test: /\.(png|jp(e*)g|gif)(\?v=\d+\.\d+\.\d+)?$/,
-                use: [
-                    {
-                        loader: 'url-loader',
-                        options: {
-                            limit: 8192,
-                            fallback: 'file-loader?name=assets/images/[name].[ext]'
-                        }
-                    }
-                ]
-            },
-            {
-                test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: 'assets/fonts/[name].[ext]'
-                        }
-                    }
-                ]
             },
             {
                 test: /\.md$/,
@@ -119,7 +87,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'demo/app/index.html',
+            template: `${paths.demo}/app/index.html`,
             filename: 'index.html',
             inject: 'body',
             hash: true
@@ -138,10 +106,8 @@ module.exports = {
             }
         }),
 
-        new webpack.ProvidePlugin({
-            $: 'jquery',
-            JQuery: 'jquery',
-            jQuery: 'jquery'
+        new webpack.DefinePlugin({
+            $: 'window.jQuery'
         }),
 
         new VueLoaderPlugin()

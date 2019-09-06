@@ -1,39 +1,22 @@
 import webpack from 'webpack';
-import path from 'path';
-import MiniCssExtractPlugin  from 'mini-css-extract-plugin';
-import globImporter from 'node-sass-glob-importer';
-import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import config from './webpack.config';
-
-const cssLoader = {
-    loader: 'css-loader',
-    options: {
-        url: true
-    }
-}
-
-const sassLoader = {
-    loader: 'sass-loader',
-    options: {
-        importer: globImporter(),
-        includePaths: [
-            'src/',
-            'node_modules/'
-        ]
-    }
-};
+import MiniCssExtractPlugin  from 'mini-css-extract-plugin';
+import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
+import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
+import outputNames from './env/output';
+import { postCssLoader, cssLoader, sassLoader } from './env/style-loaders';
 
 config.mode = "production";
 
 config.module.rules = config.module.rules.concat([
     {
-        test: /\.(css|scss)$/,
+        test: /\.s?css$/,
         use: [
             {
                 loader: MiniCssExtractPlugin.loader,
             },
             cssLoader,
-            'postcss-loader',
+            postCssLoader,
             sassLoader
         ],
     }
@@ -43,11 +26,12 @@ config.devtool = '#source-map';
 
 config.optimization = {
     splitChunks: {
-        chunks: 'all',
         cacheGroups: {
-            vendor: {
-                name: 'vendor',
-                test: /[\\/]node_modules[\\/]/
+            default: false,
+            vendors: {
+                name: outputNames.vendors,
+                test: /[\\/]node_modules[\\/].*\.js$/,
+                chunks: 'initial'
             }
         }
     },
@@ -59,6 +43,16 @@ config.optimization = {
                 warnings: false,
                 mangle: {
                     reserved: ['$super', '$', 'jQuery', 'JQuery', 'exports', 'require']
+                }
+            }
+        }),
+
+        new OptimizeCSSAssetsPlugin({
+            cssProcessor: require('cssnano'),
+            cssProcessorOptions: {
+                map: {
+                    inline: false,
+                    annotation: true
                 }
             }
         })
@@ -73,7 +67,7 @@ config.plugins = config.plugins.concat([
     }),
 
     new MiniCssExtractPlugin({
-        filename: 'assets/styles/main.min.css'
+        filename: 'styles/[name].min.css'
     })
 ]);
 
