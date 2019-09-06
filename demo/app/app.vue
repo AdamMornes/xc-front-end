@@ -51,17 +51,24 @@
     import BootstrapVue from 'bootstrap-vue';
     import VueScrollTo from 'vue-scrollto';
     
-    import SidebarNavigation from './navigation/sidebar-navigation.vue';
+    import Heading from './heading/heading.vue';
     import ComponentSelector from './component-selector/component-selector.vue';
-    
-    import './styles/styles.scss';
+    import VariantHeading from './variant-heading/variant-heading.vue';
 
     Vue.use(BootstrapVue);
     Vue.use(VueScrollTo);
 
+    Vue.component('xc-heading', Heading);
     Vue.component('xc-component-selector', ComponentSelector);
+    Vue.component('xc-variant-heading', VariantHeading);
 
     export default {
         name: 'app'
     }
 </script>
+
+<style scoped lang="scss">
+    /deep/ {
+        @import 'styles/styles';
+    }
+</style>

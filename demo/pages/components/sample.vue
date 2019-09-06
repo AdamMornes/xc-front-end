@@ -1,5 +1,8 @@
 <template>
-    <div v-html="template">
+    <div>
+        <xc-heading title="Sample" style="padding-left:1rem;padding-right:1rem;" />
+
+        <div v-html="template"></div>
     </div>
 </template>
 
