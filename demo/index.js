@@ -8,7 +8,6 @@ import routes from './navigation/index.js';
 
 import Components from '@/app/components/index';
 
-import '@/styles/styles.scss';
 import '@/index.js';
 
 Vue.use(VueRouter);

@@ -1,6 +1,6 @@
 import 'core-js/shim';
 
-import './styles/styles.scss';
+import '@/app/index';
 
 import Components from '@/app/components/index';
 
