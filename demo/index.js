@@ -6,6 +6,8 @@ import VueRouter from 'vue-router';
 import App from './app/app.vue';
 import routes from './navigation/index.js';
 
+import Components from '@/app/components/index';
+
 import '@/styles/styles.scss';
 import '@/index.js';
 
@@ -21,6 +23,9 @@ router.afterEach((to, from) => {
     if(!appInitialized) {
         appInitialized = true;
     }
+    setTimeout(() => {
+        Components.forEach(component => component());
+    }, 200);
 });
 
 new Vue({
